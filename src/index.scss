@@ -1,3 +1,5 @@
+@import "~12-column-grid/src/grid.scss";
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -7,7 +9,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+* {
+  box-sizing: border-box;
+  ///@todo define at the required element
+  transition: color 0.3s ease-out;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+  margin: 0;
+}
+
+.icon-button {
+  padding: 0;
+  border: none;
+}
+
+.no-gap {
+  gap: 0;
 }

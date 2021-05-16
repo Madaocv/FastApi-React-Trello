@@ -1,0 +1,35 @@
+$layout-row-gap: 30px;
+$layout-gap-horizontal: 20px;
+$header-height: 64px;
+$add-list-button-height: 42px;
+
+.app {
+  display: grid;
+  // $header-height + $add-list-button-height + (3 * $layout-row-gap) = 196px
+  grid-template-rows: $header-height $add-list-button-height calc(100vh - 196px);
+  row-gap: $layout-row-gap;
+  padding-bottom: $layout-row-gap;
+
+  header {
+    box-shadow: 0 1px 2px grey;
+    padding-right: $layout-gap-horizontal;
+  }
+
+  .addListButtonContainer {
+    display: grid;
+    justify-items: right;
+    padding-right: $layout-gap-horizontal;
+  }
+
+  section {
+    margin-left: $layout-gap-horizontal;
+    display: flex;
+    gap: $layout-gap-horizontal;
+  }
+
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  
+}
+

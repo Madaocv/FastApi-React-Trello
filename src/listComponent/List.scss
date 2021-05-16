@@ -1,0 +1,24 @@
+.list {
+    border: 1px solid grey;
+    background-color:#eeeeee;
+    max-height: 100%;
+    min-height: calc(100% - 30px);
+    width: 250px;
+    position: relative;
+
+    .header {
+        display: grid;
+        border-bottom: 1px solid #bbbbbb;
+        padding-left: 10px;
+    }
+
+    .cardList {
+        padding: 10px;
+    }
+
+    footer {
+        position: absolute;
+        bottom: 5px;
+        width: 100%;
+    }
+}
