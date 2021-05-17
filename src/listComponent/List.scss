@@ -5,6 +5,8 @@
     min-height: calc(100% - 30px);
     width: 250px;
     position: relative;
+    display: grid;
+    grid-template-rows: 50px 1fr;
 
     .header {
         display: grid;

@@ -6,11 +6,12 @@ import AddList from './addListComponent/AddList';
 import { ICardList, initialData } from './model/cardList';
 import AddCard from './AddCardComponent/AddCard';
 import { ICard } from './model/card';
-import { ICardMetadata } from './cardItemComponent/cardItemProps';
+import { ICardMetadata, ICardProps } from './cardItemComponent/cardItemProps';
 import { StorageService } from './StorageService';
 
 const App: React.FC = () => {
 
+  let draggedCard: Omit<ICardProps, 'removeClick' | 'dragAction'>;
   const storage = new StorageService();
 
   const [cardLists, setcardLists] = useState<ICardList[]>(
@@ -56,6 +57,21 @@ const App: React.FC = () => {
     storage.data = cardLists;
   }
 
+  const setDragged = (card: Omit<ICardProps, 'removeClick' | 'dragAction'>) => {
+    draggedCard = card
+  }
+
+  const cardDropped = (listIndex: number) => {
+    const movedToList = cardLists[listIndex];
+    const movedFromList = cardLists[draggedCard.listIndex];
+    movedFromList.cards.splice(draggedCard.cardIndex, 1);
+    movedToList.cards.unshift({
+      header: draggedCard.header,
+      description: draggedCard.description
+    });
+    setcardLists([...cardLists]);
+  }
+
   return (
     <div className="app">
       <header className="grid center">
@@ -66,6 +82,7 @@ const App: React.FC = () => {
         {cardLists.map( ({cardListHeader, cards}, listIndex) => (
           <List header={cardListHeader}
                 remove={handleListRemove}
+                cardDropped={cardDropped}
                 key={listIndex}
                 index={listIndex}>
             {cards.map( ({header, description}, cardIndex) => (
@@ -74,6 +91,7 @@ const App: React.FC = () => {
                     cardIndex={cardIndex}
                     listIndex={listIndex}
                     removeClick={handleCardRemove}
+                    dragAction={setDragged}
                     key={cardIndex} />
             ))}
             <AddCard listIndex={listIndex}

@@ -1,13 +1,28 @@
-import React from 'react';
+import React, { DragEventHandler } from 'react';
 import './List.scss';
 import { IListProps } from './listProps';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 
-const List: React.FC<IListProps> = ({index, header, remove, children} : IListProps) => {
+const List: React.FC<IListProps> = ({
+    index,
+    header,
+    children,
+    remove,
+    cardDropped
+} : IListProps) => {
 
     const handleDeleteClick = () => {
         remove(index);
+    }
+
+    const handleDrop: DragEventHandler<HTMLDivElement> = (event) => {
+        event.preventDefault();
+        cardDropped(index);
+    }
+
+    const allowDrop: DragEventHandler<HTMLDivElement> = (event) => {
+        event.preventDefault();
     }
 
     return (
@@ -20,7 +35,10 @@ const List: React.FC<IListProps> = ({index, header, remove, children} : IListPro
                     <CloseIcon />
                 </IconButton>
             </div>
-            <div className="cardList">
+            <div className="cardList"
+                onDrop={handleDrop}
+                onDragOver={allowDrop}
+                onDragEnter={allowDrop}>
                 {children}
             </div>
         </div>
