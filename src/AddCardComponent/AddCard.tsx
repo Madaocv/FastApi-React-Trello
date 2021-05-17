@@ -15,7 +15,7 @@ const AddCard: React.FC<IAddCardProps> = ({addCardItem, listIndex}: IAddCardProp
     const [showCard, setShowCard] = useState(false);
     const [showCardTitleError, setCardTitleError] = useState(false);
 
-    const handleButtonClick = () => {
+    const handleAddButtonClick = () => {
         if(!cardTitle) {
             setCardTitleError(true);
             return;
@@ -25,10 +25,11 @@ const AddCard: React.FC<IAddCardProps> = ({addCardItem, listIndex}: IAddCardProp
             listIndex,
             header: cardTitle,
             description: cardDescription
-        })
+        });
+        setShowCard(false);
     }
 
-    const handleFooterButtonClick = () => setShowCard(!showCard);
+    const handleFooterButtonClick = () => setShowCard(true);
 
     return (
         <React.Fragment>
@@ -52,7 +53,7 @@ const AddCard: React.FC<IAddCardProps> = ({addCardItem, listIndex}: IAddCardProp
                         
                     </CardContent>
                     <CardActions>
-                        <Button onClick={handleButtonClick}
+                        <Button onClick={handleAddButtonClick}
                                 variant="outlined"
                                 color="primary"
                                 size="small">
