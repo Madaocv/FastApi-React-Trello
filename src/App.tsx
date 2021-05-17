@@ -3,66 +3,57 @@ import './App.scss';
 import CardItem from './cardItemComponent/CardItem';
 import List from './listComponent/List';
 import AddList from './addListComponent/AddList';
-import { ICardList } from './model/cardList';
+import { ICardList, initialData } from './model/cardList';
 import AddCard from './AddCardComponent/AddCard';
 import { ICard } from './model/card';
 import { ICardMetadata } from './cardItemComponent/cardItemProps';
+import { StorageService } from './StorageService';
 
 const App: React.FC = () => {
 
-  const [cardLists, setcardLists] = useState<ICardList[]>(
-    [
-      {
-        cardListHeader: 'Teams',
-        cards: [
-          {
-            header: 'Product',
-            description: '3 pending tasks to be picked by Raj.'
-          },
-          {
-            header: 'Sales',
-            description: 'Send proposal to Puneet for sales prices.'
-          }
-        ]
+  const storage = new StorageService();
 
-      },
-      {
-        cardListHeader: 'Products',
-        cards: [
-          {
-            header: 'UAT Testing',
-            description: 'Ask testing engg. to set up testing infrastructure.'
-          }
-        ]
+  const [cardLists, setcardLists] = useState<ICardList[]>(
+    () => {
+      if (Array.isArray(storage.data) && storage.data.length) {
+        return storage.data;
+      } else {
+        storage.data = initialData;
+        return initialData;
       }
-    ]
+    }
   );
 
   const handleListAdd = (title: string) => {
-    setcardLists([
+    const updatedCardList = [
       ...cardLists,
       {
         cardListHeader: title,
         cards: []
       }
-    ]);
+    ]
+    setcardLists(updatedCardList);
+    storage.data = updatedCardList;
   }
 
   const handleListRemove = (key: number) => {
     cardLists.splice(key, 1);
     setcardLists([...cardLists]);
+    storage.data = cardLists;
   }
 
   const handleAddCard = ({header, description, listIndex}: ICard & {listIndex: number}) => {
     const cardList = cardLists[listIndex];
     cardList.cards.push({header, description})
     setcardLists([...cardLists]);
+    storage.data = cardLists;
   }
 
   const handleCardRemove = ({listIndex, cardIndex}: ICardMetadata) => {
     const cardList = cardLists[listIndex];
     cardList.cards.splice(cardIndex, 1);
     setcardLists([...cardLists]);
+    storage.data = cardLists;
   }
 
   return (
