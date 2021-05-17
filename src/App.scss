@@ -27,6 +27,12 @@ $add-list-button-height: 42px;
     gap: $layout-gap-horizontal;
   }
 
+  a[download] {
+    position: absolute;
+    top: 24px;
+    right: 10px;
+  }
+
 }
 
 @media (prefers-reduced-motion: no-preference) {

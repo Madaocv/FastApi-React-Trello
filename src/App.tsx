@@ -8,6 +8,7 @@ import AddCard from './AddCardComponent/AddCard';
 import { ICard } from './model/card';
 import { ICardMetadata, ICardProps } from './cardItemComponent/cardItemProps';
 import { StorageService } from './StorageService';
+import Link from '@material-ui/core/Link';
 
 const App: React.FC = () => {
 
@@ -77,7 +78,9 @@ const App: React.FC = () => {
       <header className="grid center">
         <h1 className="col-12">Trello Board</h1>
       </header>
-      <AddList listAddition={handleListAdd}/>
+      <div>
+        <AddList listAddition={handleListAdd}/>
+      </div>
       <section>
         {cardLists.map( ({cardListHeader, cards}, listIndex) => (
           <List header={cardListHeader}
@@ -100,6 +103,9 @@ const App: React.FC = () => {
         ))}
 
       </section>
+      <Link href="./Sidharth-Resume.pdf" download="" >
+        Download my Résumé
+      </Link>
     </div>
   );
 }
