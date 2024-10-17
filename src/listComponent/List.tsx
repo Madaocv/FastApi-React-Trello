@@ -1,8 +1,17 @@
 import React, { DragEventHandler } from 'react';
+import { ReactNode } from "react";
 import './List.scss';
-import { IListProps } from './listProps';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
+
+
+export interface IListProps {
+    index: number;
+    header: string;
+    remove: (key: number) => void;
+    cardDropped: (listIndex: number) => void;
+    children: ReactNode;
+}
 
 const List: React.FC<IListProps> = ({
     index,
@@ -10,7 +19,7 @@ const List: React.FC<IListProps> = ({
     children,
     remove,
     cardDropped
-} : IListProps) => {
+}: IListProps) => {
 
     const handleDeleteClick = () => {
         remove(index);
@@ -30,8 +39,8 @@ const List: React.FC<IListProps> = ({
             <div className="header grid no-gap align-v-center">
                 <h4 className="col-10">{header}</h4>
                 <IconButton className="col-2"
-                        type="button"
-                        onClick={handleDeleteClick}>
+                    type="button"
+                    onClick={handleDeleteClick}>
                     <CloseIcon />
                 </IconButton>
             </div>

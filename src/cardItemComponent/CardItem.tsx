@@ -1,10 +1,21 @@
 import React, { DragEvent, DragEventHandler } from 'react';
-import { ICardProps } from "./cardItemProps";
 import CloseIcon from '@material-ui/icons/Close';
 import './CardItem.scss';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
+
+export interface ICardMetadata {
+    cardIndex: number;
+    listIndex: number;
+}
+
+export interface ICardProps extends ICardMetadata {
+    header: string;
+    description: string;
+    removeClick: ({ cardIndex, listIndex }: ICardMetadata) => void;
+    dragAction: (data: Omit<ICardProps, 'removeClick' | 'dragAction'>) => void;
+}
 
 const CardItem: React.FC<ICardProps> = ({
     header,
@@ -13,7 +24,7 @@ const CardItem: React.FC<ICardProps> = ({
     listIndex,
     removeClick,
     dragAction
-} : ICardProps) => {
+}: ICardProps) => {
 
     const handleRemoveClick = () => removeClick({
         cardIndex,
@@ -39,8 +50,8 @@ const CardItem: React.FC<ICardProps> = ({
             <CardContent>
                 <h5>{header}</h5>
                 <IconButton onClick={handleRemoveClick}
-                        className="icon-button"
-                        size="small">
+                    className="icon-button"
+                    size="small">
                     <CloseIcon />
                 </IconButton>
                 <p>

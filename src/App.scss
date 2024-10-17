@@ -16,9 +16,14 @@ $add-list-button-height: 42px;
   }
 
   .addListButtonContainer {
-    display: grid;
-    justify-items: right;
-    padding-right: $layout-gap-horizontal;
+    display: flex;
+    justify-content: right;
+    gap: 10px;
+    padding-right: 20px;
+  }
+
+  .addListButtonContainer button {
+    width: 120px;
   }
 
   section {
@@ -35,7 +40,4 @@ $add-list-button-height: 42px;
 
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  
-}
-
+@media (prefers-reduced-motion: no-preference) {}
