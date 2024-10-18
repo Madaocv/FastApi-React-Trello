@@ -13,5 +13,5 @@ cd FastApi-React-Trello
 ```bash
 docker-compose up --build
 ```
-![User actions with Trello board](img/RecordTrello_fast_x4.gif)
+![User actions with Trello board](img/RecordTrello_fast_x3.gif)
 *User actions with Trello board*
