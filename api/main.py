@@ -1,10 +1,11 @@
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends, Query, status
+from fastapi import FastAPI, HTTPException, Depends, Query, status, Request
 from models import init_db, User, UserCreate, UserAuthenticate, Token, RefreshToken
-from models import CardCreate, ListCreate, List, Card
+from models import CardCreate, Card, CardUpdate, CardStatusUpdate, ListCreate, List, ListModel
 from contextlib import asynccontextmanager
 from logging.handlers import RotatingFileHandler
 from fastapi.middleware.cors import CORSMiddleware
+from typing import List as ChangeNamingList
 import logging
 import os
 
@@ -133,24 +134,32 @@ async def refresh_token(token: RefreshToken):
         "token_type": "bearer"
     }
 
-
 # Роут для створення картки
 @app.post("/cards/")
-async def create_card(card: CardCreate, user_id: int = Depends(Token.get_current_user)):
+async def create_card(request: Request, user_id: int = Depends(Token.get_current_user)):
     try:
+        # Отримуємо payload
+        payload = await request.json()
+        header = payload.get("header")
+        description = payload.get("description")
+        list_id = payload.get("list_id")
+        if not header or not description or not list_id:
+            raise HTTPException(status_code=400, detail="header, description, and list_id are required")
+        responsible_user_id = 1
+        assignee_id = 1
+        priority = 'Medium'
         created_card = await Card.create_card(
-            header=card.header,
-            description=card.description,
-            responsible_user_id=card.responsible_user_id,
-            assignee_id=card.assignee_id,
-            status_list_id=card.status_list_id,
-            priority=card.priority
+            header=header,
+            description=description,
+            responsible_user_id=responsible_user_id,
+            assignee_id=assignee_id,
+            status_list_id=list_id,  # list_id буде збережено в поле status_list_id
+            priority=priority
         )
-        return {"card_id": created_card['id'], "message": "Card created successfully"}
-    except ValueError as e:
-        # Якщо виникає помилка, повертаємо відповідь з 400 (Bad Request)
-        raise HTTPException(status_code=400, detail=str(e))
 
+        return {"card_id": created_card['id'],"header":header,"description":description, "message": "Card created successfully"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 # Роут для видалення картки
 @app.delete("/cards/{card_id}")
 async def delete_card(card_id: int, user_id: int = Depends(Token.get_current_user)):
@@ -163,11 +172,21 @@ async def get_card(card_id: int, user_id: int = Depends(Token.get_current_user))
     card = await Card.get_card(card_id)
     if not card:
         raise HTTPException(status_code=404, detail="Card not found")
-    return card
+    return card# PUT-ендпоінт для оновлення картки
+
+
+@app.put("/cards/{card_id}")
+async def update_card(card_id: int, card: CardStatusUpdate):
+    try:
+        # Оновлюємо тільки поле status_list_id (яке відповідає за list_id)
+        await Card.update_card_status(card_id=card_id, status_list_id=card.list_id)
+        return {"message": "Card status updated successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 # Роут для отримання всіх списків
-@app.get("/lists/")
+@app.get("/lists/", response_model=ChangeNamingList[ListModel])
 async def get_lists():
     lists = await List.get_lists()
     return lists
@@ -189,7 +208,7 @@ async def delete_list(list_id: int, user_id: int = Depends(Token.get_current_use
 
 @app.get("/admin")
 async def admin_dashboard(role: str = Depends(Token.get_current_user_role)):
-    if role != "user":
+    if role != "admin":
         raise HTTPException(status_code=403, detail="Admin access only")
     return {"message": "Welcome to the admin dashboard"}
 

@@ -9,7 +9,8 @@ export interface IListProps {
     index: number;
     header: string;
     remove: (key: number) => void;
-    cardDropped: (listIndex: number) => void;
+    // cardDropped: (listIndex: number) => void;
+    cardDropped: (listIndex: number, cardData: { id: number; listIndex: number }) => void;
     children: ReactNode;
 }
 
@@ -27,7 +28,8 @@ const List: React.FC<IListProps> = ({
 
     const handleDrop: DragEventHandler<HTMLDivElement> = (event) => {
         event.preventDefault();
-        cardDropped(index);
+        const cardData = JSON.parse(event.dataTransfer.getData("text")); // Отримуємо дані картки, яка перетягується
+        cardDropped(index, cardData);  // Передаємо новий індекс списку і дані картки
     }
 
     const allowDrop: DragEventHandler<HTMLDivElement> = (event) => {

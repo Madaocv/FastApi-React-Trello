@@ -13,6 +13,7 @@ export interface ICardMetadata {
 export interface ICardProps extends ICardMetadata {
     header: string;
     description: string;
+    id: number;
     removeClick: ({ cardIndex, listIndex }: ICardMetadata) => void;
     dragAction: (data: Omit<ICardProps, 'removeClick' | 'dragAction'>) => void;
 }
@@ -20,6 +21,7 @@ export interface ICardProps extends ICardMetadata {
 const CardItem: React.FC<ICardProps> = ({
     header,
     description,
+    id,
     cardIndex,
     listIndex,
     removeClick,
@@ -33,6 +35,7 @@ const CardItem: React.FC<ICardProps> = ({
 
     const handleDragStart: DragEventHandler<HTMLDivElement> = (event: DragEvent) => {
         const cardData = {
+            id,
             header,
             description,
             cardIndex,

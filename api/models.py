@@ -6,6 +6,7 @@ from jose import jwt, JWTError, ExpiredSignatureError
 from asyncpg import ForeignKeyViolationError
 from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer
+from typing import List
 import os
 
 # Конфігурації
@@ -56,7 +57,7 @@ async def init_db():
     # await conn.close()
     try:
         # Створюємо користувача admin/admin
-        hashed_password = pwd_context.hash("admin")
+        hashed_password = pwd_context.hash("adminadmin")
         user_exists = await conn.fetchval("SELECT id FROM users WHERE username = $1", "admin")
         if not user_exists:
             await conn.execute('''
@@ -97,6 +98,16 @@ async def init_db():
     finally:
         await conn.close()
 
+class CardUpdate(BaseModel):
+    header: str
+    description: str
+    responsible_user_id: int
+    assignee_id: int
+    status_list_id: int
+    priority: str
+
+class CardStatusUpdate(BaseModel):
+    list_id: int
 
 class UserCreate(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
@@ -127,6 +138,19 @@ class CardCreate(BaseModel):
 
 class ListCreate(BaseModel):
     title: str
+
+# Модель для картки
+class CardModel(BaseModel):
+    id: int
+    header: str
+    description: str
+    list_id: int
+
+# Модель для списку, яка включає картки
+class ListModel(BaseModel):
+    id: int
+    title: str
+    cards: List[dict]  # Список карток
 
 # Клас для роботи з користувачами
 class User:
@@ -312,6 +336,23 @@ class Card:
         finally:
             await conn.close()
 
+    @staticmethod
+    async def update_card_status(card_id: int, status_list_id: int):
+        conn = await asyncpg.connect(DATABASE_URL)
+        try:
+            result = await conn.execute('''
+                UPDATE cards 
+                SET status_list_id = $1
+                WHERE id = $2
+            ''', status_list_id, card_id)
+            
+            # Перевіряємо, чи була оновлена картка
+            if result == "UPDATE 0":
+                raise ValueError(f"Card with id {card_id} not found")
+
+        finally:
+            await conn.close()
+
 
 class List:
     # Метод для створення списку
@@ -345,8 +386,51 @@ class List:
     async def get_lists():
         conn = await asyncpg.connect(DATABASE_URL)
         try:
-            # Отримуємо всі списки
-            return await conn.fetch('SELECT * FROM lists')
+            # SQL-запит для отримання всіх списків разом з відповідними картками
+            query = '''
+                SELECT 
+                    lists.id AS list_id, 
+                    lists.title AS list_title,
+                    cards.id AS card_id, 
+                    cards.header, 
+                    cards.description, 
+                    cards.responsible_user_id, 
+                    cards.assignee_id, 
+                    cards.status_list_id, 
+                    cards.priority
+                FROM lists
+                LEFT JOIN cards ON lists.id = cards.status_list_id
+                ORDER BY lists.id;
+            '''
+            rows = await conn.fetch(query)
+            
+            # Обробка результатів запиту для побудови потрібної структури
+            lists_dict = {}
+            for row in rows:
+                list_id = row['list_id']
+                if list_id not in lists_dict:
+                    lists_dict[list_id] = {
+                        "id": list_id,
+                        "title": row['list_title'],
+                        "cards": []
+                    }
+                
+                # Додаємо картку лише якщо вона існує (щоб не додавати картки для порожніх списків)
+                if row['card_id'] is not None:
+                    card = {
+                        "id": row['card_id'],
+                        "header": row['header'],
+                        "description": row['description'],
+                        "responsible_user_id": row['responsible_user_id'],
+                        "assignee_id": row['assignee_id'],
+                        "status_list_id": row['status_list_id'],
+                        "priority": row['priority']
+                    }
+                    lists_dict[list_id]["cards"].append(card)
+
+            # Повертаємо результат як список словників
+            return list(lists_dict.values())
+
         finally:
             await conn.close()
 

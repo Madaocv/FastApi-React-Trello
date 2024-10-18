@@ -104,7 +104,7 @@ const AddCard: React.FC<AddCardProps> = ({ lists, addCard }) => {
                         <option value={-1} disabled>Select List</option>
                         {lists.map((list, index) => (
                             <option key={index} value={index}>
-                                {list.cardListHeader}
+                                {list.title}
                             </option>
                         ))}
                     </TextField>
