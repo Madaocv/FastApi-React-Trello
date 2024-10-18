@@ -153,7 +153,7 @@ const App: React.FC = () => {
       const newListId = cardLists[newListIndex].id; // Отримуємо ID нового списку
 
       // Запит на бекенд для оновлення картки з новим list_id
-      await secureFetch(`http://127.0.0.1:8000/cards/${cardData.id}`, {
+      await fetch(`http://127.0.0.1:8000/cards/${cardData.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
