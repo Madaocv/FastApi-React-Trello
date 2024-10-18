@@ -14,6 +14,8 @@ cd FastApi-React-Trello
 ```bash
 docker-compose up --build
 ```
+### 3. App available by URL: http://127.0.0.1:3000/
+
 ![User actions with Trello board](img/RecordTrello_fast_x3.gif)
 *User actions with Trello board*
 
