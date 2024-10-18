@@ -1,6 +1,6 @@
 # Getting Started with Trello Board
 
-[Word документація достуана за посиланням](https://docs.google.com/document/d/1a4stKORyEc07yv0IUyrgbpMFK19zpEI08gOP5GjIVAY/edit?usp=sharing)
+[Word документація доступна за посиланням](https://docs.google.com/document/d/1a4stKORyEc07yv0IUyrgbpMFK19zpEI08gOP5GjIVAY/edit?usp=sharing)
 ## Setup
 
 ### 1. Clone the repository:
